@@ -54,12 +54,24 @@ namespace BigSchool.Controllers
 
         //
         // GET: /Account/Login
+        [HttpPost]
         [AllowAnonymous]
-        public ActionResult Login(string returnUrl)
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            ViewBag.ReturnUrl = returnUrl;
-            return View();
-        }
+            /* ViewBag.ReturnUrl = returnUrl;
+             return View();*/
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, Name = model.Name };
+                var resurlt = await UserManager.CreateAsync(user, model.Password);
+                if (resurlt.Succeeded)
+                {
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                }
+            }
+            return View(model);
+        }  
 
         //
         // POST: /Account/Login
@@ -144,14 +156,14 @@ namespace BigSchool.Controllers
 
         //
         // POST: /Account/Register
-        [HttpPost]
+        /*[HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email ,Name=model.Name};
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -164,13 +176,14 @@ namespace BigSchool.Controllers
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
                     return RedirectToAction("Index", "Home");
+                    
                 }
-                AddErrors(result);
+                AddErrors(result); 
             }
-
             // If we got this far, something failed, redisplay form
-            return View(model);
-        }
+           return View(model);
+        }*/
+
 
         //
         // GET: /Account/ConfirmEmail
